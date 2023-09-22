@@ -54,7 +54,6 @@ class _HomePageState extends State<HomePage> {
     results = [];
     while (O.length != 0) {
       MyState x = O.removeLast();
-      
 
       if (x.kingIsDefeat && x.horsePostion == startPosition) {
         showDialog<void>(
@@ -75,6 +74,7 @@ class _HomePageState extends State<HomePage> {
         });
         return ConvertToList(x);
       }
+
       C.add(x);
       for (int i = 0; i < 8; i++) {
         if (moveIsValid(x, moveX[i], moveY[i])) {
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
           if (x.kingIsDefeat) {
             usedCells.remove(startPosition);
           }
-          O.add(MyState(
+          MyState newState = MyState(
             prev: x,
             burningCells: x.burningCells,
             usedCells: usedCells,
@@ -93,7 +93,10 @@ class _HomePageState extends State<HomePage> {
             kingIsDefeat: x.kingIsDefeat,
             horsePostion: Position(
                 x.horsePostion.x + moveX[i], x.horsePostion.y + moveY[i]),
-          ));
+          );
+          if (!O.contains(newState) && !C.contains(newState)) {
+            O.add(newState);
+          }
         }
       }
       setState(() {
@@ -153,7 +156,7 @@ class _HomePageState extends State<HomePage> {
           if (x.kingIsDefeat) {
             usedCells.remove(startPosition);
           }
-          O.add(MyState(
+         MyState newState = MyState(
             prev: x,
             burningCells: x.burningCells,
             usedCells: usedCells,
@@ -163,7 +166,10 @@ class _HomePageState extends State<HomePage> {
             kingIsDefeat: x.kingIsDefeat,
             horsePostion: Position(
                 x.horsePostion.x + moveX[i], x.horsePostion.y + moveY[i]),
-          ));
+          );
+          if (!O.contains(newState) && !C.contains(newState)) {
+            O.add(newState);
+          }
         }
       }
       setState(() {

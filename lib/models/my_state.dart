@@ -1,16 +1,15 @@
 import 'package:equatable/equatable.dart';
 
-class Position  extends Equatable{
+class Position extends Equatable {
   final int x, y;
 
   Position(this.x, this.y);
-  
+
   @override
-  
-  List<Object?> get props => [x,y];
+  List<Object?> get props => [x, y];
 }
 
-class MyState {
+class MyState extends Equatable {
   Position kingPosition;
   Position horsePostion;
   int row, column;
@@ -26,12 +25,22 @@ class MyState {
     required this.column,
     required this.kingPosition,
     required this.horsePostion,
-    this.kingIsDefeat =false,
-    this.prev=null,
-   
-    
-  }){
-    if(!kingIsDefeat)
-      kingIsDefeat = (horsePostion==kingPosition);
+    this.kingIsDefeat = false,
+    this.prev = null,
+  }) {
+    if (!kingIsDefeat) kingIsDefeat = (horsePostion == kingPosition);
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        kingPosition,
+        horsePostion,
+        row,
+        column,
+        burningCells,
+        usedCells,
+        kingIsDefeat,
+        prev,
+      ];
 }
