@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 class Position extends Equatable {
   final int x, y;
@@ -16,6 +17,7 @@ class MyState extends Equatable {
   List<Position> burningCells;
   List<Position> usedCells;
   bool kingIsDefeat;
+  int depth;
   MyState? prev;
 
   MyState({
@@ -27,12 +29,18 @@ class MyState extends Equatable {
     required this.horsePostion,
     this.kingIsDefeat = false,
     this.prev = null,
+    this.depth = 0,
   }) {
-    if (!kingIsDefeat) kingIsDefeat = (horsePostion == kingPosition);
+    if (horsePostion == kingPosition) {
+      kingIsDefeat = !kingIsDefeat;
+      if (usedCells.length != 0) usedCells.removeAt(0);
+    }
   }
 
+ 
+
   @override
-  // TODO: implement props
+
   List<Object?> get props => [
         kingPosition,
         horsePostion,

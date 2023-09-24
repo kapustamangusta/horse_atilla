@@ -20,6 +20,8 @@ class _HomePageState extends State<HomePage> {
 
   Report report = Report(0, 0, 0, 0);
 
+  String search = '';
+
   void _showDialog(Result result) {
     if (result.result.length == 0) {
       showDialog<void>(
@@ -83,6 +85,16 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         height: 10,
                       ),
+                      Text(
+                        search,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Text('Количество итераций: ${report.countIteration}'),
                       SizedBox(
                         height: 10,
@@ -127,9 +139,25 @@ class _HomePageState extends State<HomePage> {
                     _showDialog(results!);
                     setState(() {
                       report = results!.report;
+                      search = "Поиск в глубину";
                     });
                   },
                   child: Text("Поиск в глубину"),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    results = SearchMethods()
+                        .depthFirstSearchWithIterativeDeepening(widget.state);
+                    _showDialog(results!);
+                    setState(() {
+                      report = results!.report;
+                      search = "Поиск в глубину с интерактивным углублением";
+                    });
+                  },
+                  child: Text("Поиск в глубину с интерактивным углублением"),
                 ),
                 SizedBox(
                   height: 16,
@@ -140,9 +168,33 @@ class _HomePageState extends State<HomePage> {
                     _showDialog(results!);
                     setState(() {
                       report = results!.report;
+                      search = "Поиск в ширирну";
                     });
                   },
                   child: Text("Поиск в ширирну"),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    MyState end = MyState(
+                      burningCells: widget.state.burningCells,
+                      usedCells: [],
+                      row: widget.state.row,
+                      column: widget.state.column,
+                      kingPosition: widget.state.kingPosition,
+                      horsePostion: widget.state.horsePostion,
+                      kingIsDefeat: true
+                    );
+                    results = SearchMethods().bidirectionalSearch(widget.state, end);
+                    _showDialog(results!);
+                    setState(() {
+                      report = results!.report;
+                      search = "Двунаправленный поиск";
+                    });
+                  },
+                  child: Text("Двунаправленный поиск"),
                 ),
                 SizedBox(
                   height: 16,
