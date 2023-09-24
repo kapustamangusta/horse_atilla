@@ -2,6 +2,7 @@ import 'package:attila_horse/constructor_page.dart';
 import 'package:attila_horse/field.dart';
 import 'package:attila_horse/models/my_state.dart';
 import 'package:attila_horse/results_page.dart';
+import 'package:attila_horse/services/search_methods.dart';
 import 'package:flutter/material.dart';
 
 import 'models/report.dart';
@@ -15,180 +16,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<MyState> results = [];
-  List<MyState> O = [], C = [];
+  Result? results = null;
 
   Report report = Report(0, 0, 0, 0);
-  List<int> moveX = [2, -1, -2, -2, 1, 2, 1, -1];
-  List<int> moveY = [1, 2, 1, -1, -2, -1, 2, -2];
-  void ConvertToList(MyState state) {
-    MyState? currentState = state;
-    results = [];
-    while (currentState != null) {
-      results.insert(0, currentState);
-      currentState = currentState.prev;
-    }
-  }
 
-  bool moveIsValid(MyState state, int dx, int dy) {
-    return state.horsePostion.x + dx < state.column &&
-        state.horsePostion.x + dx >= 0 &&
-        state.horsePostion.y + dy < state.row &&
-        state.horsePostion.y + dy >= 0 &&
-        !state.burningCells.any((element) =>
-            element ==
-            Position(state.horsePostion.x + dx, state.horsePostion.y + dy)) &&
-        !state.usedCells.any((element) =>
-            element ==
-            Position(state.horsePostion.x + dx, state.horsePostion.y + dy));
-  }
-
-  // поиск в глубину
-  void searchInDepth() {
-    report = Report(0, 0, 0, 0);
-    O = [widget.state];
-    C = [];
-
-    Position startPosition = widget.state.horsePostion;
-
-    results = [];
-    while (O.length != 0) {
-      MyState x = O.removeLast();
-
-      if (x.kingIsDefeat && x.horsePostion == startPosition) {
-        showDialog<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text(
-                "Результат найден!",
-                style: TextStyle(
-                  color: Colors.green,
-                ),
+  void _showDialog(Result result) {
+    if (result.result.length == 0) {
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(
+              "Результат не найден!",
+              style: TextStyle(
+                color: Colors.red,
               ),
-            );
-          },
-        );
-        setState(() {
-          report.maxLengthResultO = O.length;
-        });
-        return ConvertToList(x);
-      }
-
-      C.add(x);
-      for (int i = 0; i < 8; i++) {
-        if (moveIsValid(x, moveX[i], moveY[i])) {
-          var usedCells = [...x.usedCells];
-          usedCells.add(x.horsePostion);
-          if (x.kingIsDefeat) {
-            usedCells.remove(startPosition);
-          }
-          MyState newState = MyState(
-            prev: x,
-            burningCells: x.burningCells,
-            usedCells: usedCells,
-            row: x.row,
-            column: x.column,
-            kingPosition: x.kingPosition,
-            kingIsDefeat: x.kingIsDefeat,
-            horsePostion: Position(
-                x.horsePostion.x + moveX[i], x.horsePostion.y + moveY[i]),
-          );
-          if (!O.contains(newState) && !C.contains(newState)) {
-            O.add(newState);
-          }
-        }
-      }
-      setState(() {
-        report.setData(O, C);
-      });
-    }
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(
-            "Результат не найден!",
-            style: TextStyle(
-              color: Colors.red,
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  // поиск в ширину
-  void searchInWidth() {
-    report = Report(0, 0, 0, 0);
-    O = [widget.state];
-    C = [];
-
-    Position startPosition = widget.state.horsePostion;
-
-    results = [];
-    while (O.length != 0) {
-      MyState x = O.removeAt(0);
-      if (x.kingIsDefeat && x.horsePostion == startPosition) {
-        showDialog<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text(
-                "Результат найден!",
-                style: TextStyle(
-                  color: Colors.green,
-                ),
+          );
+        },
+      );
+    } else {
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Text(
+              "Результат найден!",
+              style: TextStyle(
+                color: Colors.green,
               ),
-            );
-          },
-        );
-        setState(() {
-          report.maxLengthResultO = O.length;
-        });
-        return ConvertToList(x);
-      }
-      C.add(x);
-      for (int i = 0; i < 8; i++) {
-        if (moveIsValid(x, moveX[i], moveY[i])) {
-          var usedCells = [...x.usedCells];
-          usedCells.add(x.horsePostion);
-          if (x.kingIsDefeat) {
-            usedCells.remove(startPosition);
-          }
-         MyState newState = MyState(
-            prev: x,
-            burningCells: x.burningCells,
-            usedCells: usedCells,
-            row: x.row,
-            column: x.column,
-            kingPosition: x.kingPosition,
-            kingIsDefeat: x.kingIsDefeat,
-            horsePostion: Position(
-                x.horsePostion.x + moveX[i], x.horsePostion.y + moveY[i]),
-          );
-          if (!O.contains(newState) && !C.contains(newState)) {
-            O.add(newState);
-          }
-        }
-      }
-      setState(() {
-        report.setData(O, C);
-      });
-    }
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(
-            "Результат не найден!",
-            style: TextStyle(
-              color: Colors.red,
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -262,11 +123,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    results = SearchMethods().searchInDepth(widget.state);
+                    _showDialog(results!);
                     setState(() {
-                      results = [];
+                      report = results!.report;
                     });
-                    searchInDepth();
-                    setState(() {});
                   },
                   child: Text("Поиск в глубину"),
                 ),
@@ -275,25 +136,25 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    results = SearchMethods().searchInWidth(widget.state);
+                    _showDialog(results!);
                     setState(() {
-                      results = [];
+                      report = results!.report;
                     });
-                    searchInWidth();
-                    setState(() {});
                   },
                   child: Text("Поиск в ширирну"),
                 ),
                 SizedBox(
                   height: 16,
                 ),
-                results.length != 0
+                (results != null && results!.result.length != 0)
                     ? ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) => ResultsPage(
-                                results: results,
+                                results: results!.result,
                               ),
                             ),
                           );
