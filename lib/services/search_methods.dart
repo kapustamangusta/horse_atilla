@@ -1,5 +1,8 @@
-import 'package:attila_horse/models/report.dart';
+import 'dart:io';
+import 'dart:math';
 
+import 'package:attila_horse/models/report.dart';
+import 'package:collection/collection.dart';
 import '../models/my_state.dart';
 
 class Result {
@@ -210,98 +213,231 @@ class SearchMethods {
 
   ///двунаправленный поиск
   Result bidirectionalSearch(MyState start, MyState end) {
-    List<MyState> forward_O = [start],
-        backward_O = [end],
-        forward_C = [],
-        backward_C = [];
+    List<MyState> forwardO = [start],
+        backwardO = [end],
+        forwardC = [],
+        backwardC = [];
     Position startPosition = start.horsePostion;
     Report report = Report(0, 0, 0, 0);
 
-    while (forward_O.length != 0 && backward_O.length != 0) {
-      MyState forward_x = forward_O.removeAt(0);
-      MyState backward_x = backward_O.removeAt(0);
+    while (forwardO.length != 0 && backwardO.length != 0) {
+      MyState forwardX = forwardO.removeAt(0);
+      MyState backwardX = backwardO.removeAt(0);
       // прямой поиск
-      
+
+      report.countIteration % 100 == 0
+          ? print('b ${report.countIteration}')
+          : null;
 
       // находим состояние их обратного поиска, являющиемся продолжением состояния прямого поиска
-      final suitableStateForForwardX = backward_C.where((element) =>
-          (element.kingIsDefeat == forward_x.kingIsDefeat &&
-              element.horsePostion == forward_x.horsePostion &&
-              !_duplicate(element.usedCells, forward_x.usedCells))).firstOrNull;
+      final suitableStateForForwardX = backwardC
+          .where((element) => (element.kingIsDefeat == forwardX.kingIsDefeat &&
+              element.horsePostion == forwardX.horsePostion &&
+              !_duplicate(element.usedCells, forwardX.usedCells)))
+          .firstOrNull;
 
       if (suitableStateForForwardX != null) {
-        report.maxLengthResultO = forward_O.length + backward_O.length;
+        report.maxLengthResultO = forwardO.length + backwardO.length;
         Result result = Result(
-            result: _convertToList(forward_x, suitableStateForForwardX), report: report);
+            result: _convertToList(forwardX, suitableStateForForwardX),
+            report: report);
         return result;
       }
 
-      forward_C.add(forward_x);
+      forwardC.add(forwardX);
 
       for (int i = 0; i < 8; i++) {
-        if (_moveIsValid(forward_x, _moveX[i], _moveY[i])) {
-          var usedCells = [...forward_x.usedCells];
-          usedCells.add(forward_x.horsePostion);
-          if (forward_x.kingIsDefeat) {
+        if (_moveIsValid(forwardX, _moveX[i], _moveY[i])) {
+          var usedCells = [...forwardX.usedCells];
+          usedCells.add(forwardX.horsePostion);
+          if (forwardX.kingIsDefeat) {
             usedCells.remove(startPosition);
           }
           MyState newState = MyState(
-            prev: forward_x,
-            burningCells: forward_x.burningCells,
+            prev: forwardX,
+            burningCells: forwardX.burningCells,
             usedCells: usedCells,
-            row: forward_x.row,
-            column: forward_x.column,
-            kingPosition: forward_x.kingPosition,
-            kingIsDefeat: forward_x.kingIsDefeat,
-            horsePostion: Position(forward_x.horsePostion.x + _moveX[i],
-                forward_x.horsePostion.y + _moveY[i]),
+            row: forwardX.row,
+            column: forwardX.column,
+            kingPosition: forwardX.kingPosition,
+            kingIsDefeat: forwardX.kingIsDefeat,
+            horsePostion: Position(forwardX.horsePostion.x + _moveX[i],
+                forwardX.horsePostion.y + _moveY[i]),
           );
-          if (!forward_O.contains(newState) && !forward_C.contains(newState)) {
-            forward_O.add(newState);
+          if (!forwardO.contains(newState) && !forwardC.contains(newState)) {
+            forwardO.add(newState);
           }
         }
       }
 
       //обратный поиск
+      report.countIteration % 100 == 0
+          ? print('b ${report.countIteration}')
+          : null;
       // находим состояние их прямого поиска, являющиемся продолжением состояния обратного поиска
-      final suitableStateForBackwardX = forward_C.where((element) =>
-          (element.kingIsDefeat == backward_x.kingIsDefeat &&
-              element.horsePostion == backward_x.horsePostion &&
-              !_duplicate(element.usedCells, forward_x.usedCells))).firstOrNull;
+      final suitableStateForBackwardX = forwardC
+          .where((element) => (element.kingIsDefeat == backwardX.kingIsDefeat &&
+              element.horsePostion == backwardX.horsePostion &&
+              !_duplicate(element.usedCells, forwardX.usedCells)))
+          .firstOrNull;
 
       if (suitableStateForBackwardX != null) {
-        report.maxLengthResultO = forward_O.length + backward_O.length;
+        report.maxLengthResultO = forwardO.length + backwardO.length;
         Result result = Result(
-            result: _convertToList(suitableStateForBackwardX, backward_x), report: report);
+            result: _convertToList(suitableStateForBackwardX, backwardX),
+            report: report);
         return result;
       }
-      backward_C.add(backward_x);
+      backwardC.add(backwardX);
 
       for (int i = 0; i < 8; i++) {
-        if (_moveIsValid(backward_x, _moveX[i], _moveY[i])) {
-          var usedCells = [...backward_x.usedCells];
-          usedCells.add(backward_x.horsePostion);
-          if (backward_x.kingIsDefeat) {
+        if (_moveIsValid(backwardX, _moveX[i], _moveY[i])) {
+          var usedCells = [...backwardX.usedCells];
+          usedCells.add(backwardX.horsePostion);
+          if (backwardX.kingIsDefeat) {
             usedCells.remove(startPosition);
           }
           MyState newState = MyState(
-            prev: backward_x,
-            burningCells: backward_x.burningCells,
+            prev: backwardX,
+            burningCells: backwardX.burningCells,
             usedCells: usedCells,
-            row: backward_x.row,
-            column: forward_x.column,
-            kingPosition: backward_x.kingPosition,
-            kingIsDefeat: backward_x.kingIsDefeat,
-            horsePostion: Position(backward_x.horsePostion.x + _moveX[i],
-                backward_x.horsePostion.y + _moveY[i]),
+            row: backwardX.row,
+            column: forwardX.column,
+            kingPosition: backwardX.kingPosition,
+            kingIsDefeat: backwardX.kingIsDefeat,
+            horsePostion: Position(backwardX.horsePostion.x + _moveX[i],
+                backwardX.horsePostion.y + _moveY[i]),
           );
-          if (!backward_O.contains(newState) &&
-              !backward_C.contains(newState)) {
-            backward_O.add(newState);
+          if (!backwardO.contains(newState) && !backwardC.contains(newState)) {
+            backwardO.add(newState);
           }
         }
       }
-      report.setData(forward_O + backward_O, forward_C + backward_C);
+      report.setData(forwardO + backwardO, forwardC + backwardC);
+    }
+    return Result(result: [], report: report);
+  }
+
+  int _h(MyState state, Position startPosition, int evristic) {
+    int dx = state.kingIsDefeat
+        ? (state.horsePostion.x - startPosition.x).abs()
+        : (state.horsePostion.x - state.kingPosition.x).abs();
+    int dy = state.kingIsDefeat
+        ? (state.horsePostion.y - startPosition.y).abs()
+        : (state.horsePostion.y - state.kingPosition.y).abs();
+
+    int dxStart = (startPosition.x - state.kingPosition.x).abs();
+    int dyStart = (startPosition.y - state.kingPosition.y).abs();
+
+    if (evristic == 1) {
+      int s = dx >= dy ? dx : dy;
+      int sStart = dxStart >= dyStart ? dxStart : dyStart;
+      int c = state.kingIsDefeat ? sStart : 0;
+      return s + c;
+    } else if (evristic == 2) {
+      int sStart = !state.kingIsDefeat ? dxStart + dyStart : 0;
+      return dy + dx + sStart;
+    } else{
+      int sStart = !state.kingIsDefeat
+        ? sqrt(dxStart * dxStart + dyStart * dyStart).toInt()
+        : 0;
+
+    return state.usedCells.length;
+    }
+  }
+
+  
+  bool _containsInOAndC(
+      MyState state, PriorityQueue<MyState> O, List<MyState> C) {
+    return _containsInC(state, C) != null || _containsInO(state, O) != null;
+  }
+
+  MyState? _containsInO(MyState state, PriorityQueue<MyState> O) {
+    var OList = O.toList();
+    for (int i = 0; i < O.length; i++) {
+      if (state.kingIsDefeat == OList[i].kingIsDefeat &&
+          state.horsePostion == OList[i].horsePostion) {
+        return OList[i];
+      }
+    }
+
+    return null;
+  }
+
+  MyState? _containsInC(MyState state, List<MyState> C) {
+    for (int i = 0; i < C.length; i++) {
+      if (state.kingIsDefeat == C[i].kingIsDefeat &&
+          state.horsePostion == C[i].horsePostion) {
+        return C[i];
+      }
+    }
+
+    return null;
+  }
+
+  Result aStar(MyState state, int evristic) {
+    Report report = Report(0, 0, 0, 0);
+    //PriorityQueue<MyState> O = new PriorityQueue<MyState>((a,b)=> prio)
+    final O = PriorityQueue<MyState>((a, b) => a.cost.compareTo(a.cost));
+    Position startPosition = state.horsePostion;
+
+    state.cost = state.depth + _h(state, startPosition, evristic);
+    O.add(state);
+    List<MyState> C = [];
+
+    while (O.length != 0) {
+      MyState x = O.removeFirst();
+
+      if (x.kingIsDefeat && x.horsePostion == startPosition) {
+        report.maxLengthResultO = O.length;
+        Result result = Result(result: _convertToList(x), report: report);
+        return result;
+      }
+
+      C.add(x);
+      for (int i = 0; i < 8; i++) {
+        if (_moveIsValid(x, _moveX[i], _moveY[i])) {
+          var usedCells = [...x.usedCells];
+          usedCells.add(x.horsePostion);
+          if (x.kingIsDefeat) {
+            usedCells.remove(startPosition);
+          }
+          MyState newState = MyState(
+            prev: x,
+            burningCells: x.burningCells,
+            usedCells: usedCells,
+            row: x.row,
+            column: x.column,
+            kingPosition: x.kingPosition,
+            kingIsDefeat: x.kingIsDefeat,
+            depth: x.depth + 1,
+            horsePostion: Position(
+                x.horsePostion.x + _moveX[i], x.horsePostion.y + _moveY[i]),
+          );
+          newState.cost = newState.depth + _h(newState, startPosition, evristic);
+          if (!_containsInOAndC(newState, O, C)) {
+            O.add(newState);
+          } else {
+            var st = _containsInO(newState, O);
+            if (st != null) {
+              if (st.cost > x.cost) {
+                O.remove(st);
+                O.add(newState);
+              }
+            } else {
+              var st1 = _containsInC(state, C);
+              if (st1 != null) {
+                if (st1.cost > x.cost) {
+                  C.remove(st1);
+                  O.add(newState);
+                }
+              }
+            }
+          }
+        }
+
+        report.setData(O.toList(), C);
+      }
     }
     return Result(result: [], report: report);
   }

@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
           ],
           row: 8,
           column: 8,
-          kingPosition: Position(1, 0),
-          horsePostion: Position(2, 2),
+          kingPosition: Position(0, 0),
+          horsePostion: Position(7, 7),
         ),
       ),
     );

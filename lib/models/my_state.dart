@@ -18,6 +18,7 @@ class MyState extends Equatable {
   List<Position> usedCells;
   bool kingIsDefeat;
   int depth;
+  int cost;
   MyState? prev;
 
   MyState({
@@ -30,6 +31,7 @@ class MyState extends Equatable {
     this.kingIsDefeat = false,
     this.prev = null,
     this.depth = 0,
+    this.cost =0
   }) {
     if (horsePostion == kingPosition) {
       kingIsDefeat = !kingIsDefeat;

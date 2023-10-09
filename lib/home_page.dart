@@ -17,8 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Result? results = null;
-
-  Report report = Report(0, 0, 0, 0);
+  List<Result> res = [];
+  List<Report> report = [Report(0, 0, 0, 0)];
 
   String search = '';
 
@@ -56,6 +56,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    int index = -1;
+    res =[];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -67,154 +69,212 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Field(state: widget.state),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  width: 400,
-                  //height: 400,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.pink),
-                    borderRadius: BorderRadius.circular(16),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    width: 400,
+                    //height: 400,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.pink),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ...report.map(
+                          (e) {
+                            index += 1;
+                            List<String> searches = ['A* Чебышев','A* Манхеттен','A* Эвклид',];
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  res.length!=0 ? searches[index] : search,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                    'Количество итераций: ${e.countIteration}'),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Макс. длинна О: ${e.maxLengthO}'),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                    'Макс. длинна О в конце: ${e.maxLengthResultO}'),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Макс. длинна О+С: ${e.lengthOC}'),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                (res.length != 0 &&
+                                        res[index].result.length != 0)
+                                    ? ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  ResultsPage(
+                                                results: res[index].result,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Text("Посмотреть результаты"),
+                                      )
+                                    : SizedBox(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            );
+                          },
+                        ).toList(),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        search,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text('Количество итераций: ${report.countIteration}'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text('Макс. длинна О: ${report.maxLengthO}'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Макс. длинна О в конце: ${report.maxLengthResultO}'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text('Макс. длинна О+С: ${report.lengthOC}'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                    ],
+                  SizedBox(
+                    height: 16,
                   ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) =>
-                            ConstructorPage(state: widget.state),
-                      ),
-                    );
-                  },
-                  child: Text("Конструктор"),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    results = SearchMethods().searchInDepth(widget.state);
-                    _showDialog(results!);
-                    setState(() {
-                      report = results!.report;
-                      search = "Поиск в глубину";
-                    });
-                  },
-                  child: Text("Поиск в глубину"),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    results = SearchMethods()
-                        .depthFirstSearchWithIterativeDeepening(widget.state);
-                    _showDialog(results!);
-                    setState(() {
-                      report = results!.report;
-                      search = "Поиск в глубину с интерактивным углублением";
-                    });
-                  },
-                  child: Text("Поиск в глубину с интерактивным углублением"),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    results = SearchMethods().searchInWidth(widget.state);
-                    _showDialog(results!);
-                    setState(() {
-                      report = results!.report;
-                      search = "Поиск в ширирну";
-                    });
-                  },
-                  child: Text("Поиск в ширирну"),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    MyState end = MyState(
-                      burningCells: widget.state.burningCells,
-                      usedCells: [],
-                      row: widget.state.row,
-                      column: widget.state.column,
-                      kingPosition: widget.state.kingPosition,
-                      horsePostion: widget.state.horsePostion,
-                      kingIsDefeat: true
-                    );
-                    results = SearchMethods().bidirectionalSearch(widget.state, end);
-                    _showDialog(results!);
-                    setState(() {
-                      report = results!.report;
-                      search = "Двунаправленный поиск";
-                    });
-                  },
-                  child: Text("Двунаправленный поиск"),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                (results != null && results!.result.length != 0)
-                    ? ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (BuildContext context) => ResultsPage(
-                                results: results!.result,
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              ConstructorPage(state: widget.state),
+                        ),
+                      );
+                    },
+                    child: Text("Конструктор"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods().searchInDepth(widget.state);
+                      _showDialog(results!);
+                      setState(() {
+                        report = [results!.report];
+                        search = "Поиск в глубину";
+                      });
+                    },
+                    child: Text("Поиск в глубину"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods()
+                          .depthFirstSearchWithIterativeDeepening(widget.state);
+                      _showDialog(results!);
+                      setState(() {
+                        report = [results!.report];
+                        search = "Поиск в глубину с итеративным углублением";
+                      });
+                    },
+                    child: Text("Поиск в глубину с итеративным углублением"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods().searchInWidth(widget.state);
+                      _showDialog(results!);
+                      setState(() {
+                        report = [results!.report];
+                        search = "Поиск в ширирну";
+                      });
+                    },
+                    child: Text("Поиск в ширирну"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      MyState end = MyState(
+                          burningCells: widget.state.burningCells,
+                          usedCells: [],
+                          row: widget.state.row,
+                          column: widget.state.column,
+                          kingPosition: widget.state.kingPosition,
+                          horsePostion: widget.state.horsePostion,
+                          kingIsDefeat: true);
+                      results = SearchMethods()
+                          .bidirectionalSearch(widget.state, end);
+                      _showDialog(results!);
+                      setState(() {
+                        report = [results!.report];
+                        search = "Двунаправленный поиск";
+                      });
+                    },
+                    child: Text("Двунаправленный поиск"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      report = [];
+                      results = SearchMethods().aStar(widget.state, 1);
+                      res.add(results!);
+                      _showDialog(results!);
+                      report.add(results!.report);
+                      results = SearchMethods().aStar(widget.state, 2);
+                       res.add(results!);
+                      _showDialog(results!);
+                      report.add(results!.report);
+                      results = SearchMethods().aStar(widget.state, 3);
+                       res.add(results!);
+                      _showDialog(results!);
+                      report.add(results!.report);
+                      setState(() {
+                        //report.add(results!.report);
+                        search = "A*";
+                      });
+                    },
+                    child: Text("A*"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  (results != null && results!.result.length != 0)
+                      ? ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) => ResultsPage(
+                                  results: results!.result,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: Text("Посмотреть результаты"),
-                      )
-                    : SizedBox(),
-              ],
+                            );
+                          },
+                          child: Text("Посмотреть результаты"),
+                        )
+                      : SizedBox(),
+                ],
+              ),
             )
           ],
         ),
