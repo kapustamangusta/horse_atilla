@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     int index = -1;
-    res =[];
+    //res =[];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -236,18 +236,18 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     onPressed: () {
                       report = [];
-                      results = SearchMethods().aStar(widget.state, 1);
-                      res.add(results!);
-                      _showDialog(results!);
-                      report.add(results!.report);
-                      results = SearchMethods().aStar(widget.state, 2);
-                       res.add(results!);
-                      _showDialog(results!);
-                      report.add(results!.report);
-                      results = SearchMethods().aStar(widget.state, 3);
-                       res.add(results!);
-                      _showDialog(results!);
-                      report.add(results!.report);
+                      Result? r1 = SearchMethods().aStar(widget.state, 1);
+                      res.add(r1!);
+                      _showDialog(r1!);
+                      report.add(r1!.report);
+                      Result? r2 = SearchMethods().aStar(widget.state, 2);
+                       res.add(r2!);
+                      _showDialog(r2!);
+                      report.add(r2!.report);
+                      Result? r3 =  SearchMethods().aStar(widget.state, 3);
+                       res.add(r3!);
+                      _showDialog(r3!);
+                      report.add(r3!.report);
                       setState(() {
                         //report.add(results!.report);
                         search = "A*";
