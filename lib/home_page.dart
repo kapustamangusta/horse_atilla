@@ -205,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                       results = SearchMethods().aStar(widget.state, 1);
                       _showDialog(results!);
                       setState(() {
-                        report=results!.report;
+                        report = results!.report;
                         search = "A* Чебышев";
                       });
                     },
@@ -219,7 +219,7 @@ class _HomePageState extends State<HomePage> {
                       results = SearchMethods().aStar(widget.state, 2);
                       _showDialog(results!);
                       setState(() {
-                        report=results!.report;
+                        report = results!.report;
                         search = "A* Манхеттен";
                       });
                     },
@@ -228,16 +228,30 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 16,
                   ),
-                   ElevatedButton(
+                  ElevatedButton(
                     onPressed: () {
                       results = SearchMethods().aStar(widget.state, 3);
                       _showDialog(results!);
                       setState(() {
-                        report=results!.report;
+                        report = results!.report;
                         search = "A* Евклид";
                       });
                     },
                     child: Text("A* Евклид"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods().aStar(widget.state, 4);
+                      _showDialog(results!);
+                      setState(() {
+                        report = results!.report;
+                        search = "A* матрица";
+                      });
+                    },
+                    child: Text("A* матрица"),
                   ),
                   SizedBox(
                     height: 16,

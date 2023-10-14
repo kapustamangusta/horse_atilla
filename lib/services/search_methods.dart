@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
@@ -333,16 +334,52 @@ class SearchMethods {
       int s = dx >= dy ? dx : dy;
       int sStart = dxStart >= dyStart ? dxStart : dyStart;
       int c = !state.kingIsDefeat ? sStart : 0;
-      return (s/3).ceil() + (c/3).ceil();
+      return (s / 2).ceil() + (c / 2).ceil();
     } else if (evristic == 2) {
-      int sStart = !state.kingIsDefeat ? ((dxStart + dyStart)/3).ceil() : 0;
-      return ((dy + dx)/3).ceil() + sStart;
-    } else {
+      int sStart = !state.kingIsDefeat ? ((dxStart + dyStart) / 3).ceil() : 0;
+      return ((dy + dx) / 3).ceil() + sStart;
+    } else if (evristic == 3) {
       int sStart = !state.kingIsDefeat
-          ? (sqrt(dxStart * dxStart + dyStart * dyStart)/2).ceil()
+          ? (sqrt(dxStart * dxStart + dyStart * dyStart)).ceil()
           : 0;
 
-      return (sqrt(dx * dx + dy * dy)/2).ceil() + sStart;
+      return (sqrt(dx * dx + dy * dy)).ceil() + sStart;
+    } else {
+      List<List<int>> table =
+          List.generate(state.row, (index) => List.filled(state.column, -1));
+      List<int> dxHorse = [1, 2, 2, 1, -1, -2, -2, -1];
+      List<int> dyHorse = [2, 1, -1, -2, -2, -1, 1, 2];
+
+      Queue<Position> queue = Queue();
+      queue.add(Position(0, 0));
+      table[0][0] = 0;
+
+      while (queue.isNotEmpty) {
+        Position currentPosition = queue.removeFirst();
+        int x = currentPosition.x;
+        int y = currentPosition.y;
+
+        for (int i = 0; i < 8; i++) {
+          int nx = x + dxHorse[i];
+          int ny = y + dyHorse[i];
+
+          if (0 <= nx &&
+              nx < state.column &&
+              0 <= ny &&
+              ny < state.row &&
+              table[nx][ny] == -1) {
+            table[nx][ny] = table[x][y] + 1;
+            queue.add(Position(nx, ny));
+          }
+        }
+      }
+      int sStart = !state.kingIsDefeat ? table[dxStart][dyStart] : 0;
+      // for(int i=0;i<table.length;i++){
+      //   for(int j=0;j<table[i].length;j++){
+      //     print(table[i].toString());
+      //   }
+      // }
+      return table[dx][dy] + sStart;
     }
   }
 
@@ -424,9 +461,8 @@ class SearchMethods {
                 O.remove(st);
                 O.add(newState);
               }
-
             } else {
-              var st1 = _containsInC(state, C);
+              var st1 = _containsInC(newState, C);
               if (st1 != null) {
                 if (st1.cost > newState.cost) {
                   C.remove(st1);
