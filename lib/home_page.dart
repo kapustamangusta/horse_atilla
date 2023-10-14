@@ -17,8 +17,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Result? results = null;
-  List<Result> res = [];
-  List<Report> report = [Report(0, 0, 0, 0)];
+
+  Report report = Report(0, 0, 0, 0);
 
   String search = '';
 
@@ -56,8 +56,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    int index = -1;
-    //res =[];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -85,67 +83,36 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ...report.map(
-                          (e) {
-                            index += 1;
-                            List<String> searches = ['A* Чебышев','A* Манхеттен','A* Эвклид',];
-                            return Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  res.length!=0 ? searches[index] : search,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                    'Количество итераций: ${e.countIteration}'),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text('Макс. длинна О: ${e.maxLengthO}'),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                    'Макс. длинна О в конце: ${e.maxLengthResultO}'),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text('Макс. длинна О+С: ${e.lengthOC}'),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                (res.length != 0 &&
-                                        res[index].result.length != 0)
-                                    ? ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  ResultsPage(
-                                                results: res[index].result,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Text("Посмотреть результаты"),
-                                      )
-                                    : SizedBox(),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                              ],
-                            );
-                          },
-                        ).toList(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          search,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('Количество итераций: ${report.countIteration}'),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('Макс. длинна О: ${report.maxLengthO}'),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            'Макс. длинна О в конце: ${report.maxLengthResultO}'),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('Макс. длинна О+С: ${report.lengthOC}'),
+                        SizedBox(
+                          height: 10,
+                        ),
                       ],
                     ),
                   ),
@@ -172,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                       results = SearchMethods().searchInDepth(widget.state);
                       _showDialog(results!);
                       setState(() {
-                        report = [results!.report];
+                        report = results!.report;
                         search = "Поиск в глубину";
                       });
                     },
@@ -187,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                           .depthFirstSearchWithIterativeDeepening(widget.state);
                       _showDialog(results!);
                       setState(() {
-                        report = [results!.report];
+                        report = results!.report;
                         search = "Поиск в глубину с итеративным углублением";
                       });
                     },
@@ -201,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                       results = SearchMethods().searchInWidth(widget.state);
                       _showDialog(results!);
                       setState(() {
-                        report = [results!.report];
+                        report = results!.report;
                         search = "Поиск в ширирну";
                       });
                     },
@@ -224,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                           .bidirectionalSearch(widget.state, end);
                       _showDialog(results!);
                       setState(() {
-                        report = [results!.report];
+                        report = results!.report;
                         search = "Двунаправленный поиск";
                       });
                     },
@@ -235,25 +202,42 @@ class _HomePageState extends State<HomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      report = [];
-                      Result? r1 = SearchMethods().aStar(widget.state, 1);
-                      res.add(r1!);
-                      _showDialog(r1!);
-                      report.add(r1!.report);
-                      Result? r2 = SearchMethods().aStar(widget.state, 2);
-                       res.add(r2!);
-                      _showDialog(r2!);
-                      report.add(r2!.report);
-                      Result? r3 =  SearchMethods().aStar(widget.state, 3);
-                       res.add(r3!);
-                      _showDialog(r3!);
-                      report.add(r3!.report);
+                      results = SearchMethods().aStar(widget.state, 1);
+                      _showDialog(results!);
                       setState(() {
-                        //report.add(results!.report);
-                        search = "A*";
+                        report=results!.report;
+                        search = "A* Чебышев";
                       });
                     },
-                    child: Text("A*"),
+                    child: Text("A* Чебышев"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods().aStar(widget.state, 2);
+                      _showDialog(results!);
+                      setState(() {
+                        report=results!.report;
+                        search = "A* Манхеттен";
+                      });
+                    },
+                    child: Text("A* Манхеттен"),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                   ElevatedButton(
+                    onPressed: () {
+                      results = SearchMethods().aStar(widget.state, 3);
+                      _showDialog(results!);
+                      setState(() {
+                        report=results!.report;
+                        search = "A* Евклид";
+                      });
+                    },
+                    child: Text("A* Евклид"),
                   ),
                   SizedBox(
                     height: 16,

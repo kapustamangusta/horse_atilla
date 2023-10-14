@@ -332,21 +332,20 @@ class SearchMethods {
     if (evristic == 1) {
       int s = dx >= dy ? dx : dy;
       int sStart = dxStart >= dyStart ? dxStart : dyStart;
-      int c = state.kingIsDefeat ? sStart : 0;
-      return s + c;
+      int c = !state.kingIsDefeat ? sStart : 0;
+      return (s/3).ceil() + (c/3).ceil();
     } else if (evristic == 2) {
-      int sStart = !state.kingIsDefeat ? dxStart + dyStart : 0;
-      return dy + dx + sStart;
-    } else{
+      int sStart = !state.kingIsDefeat ? ((dxStart + dyStart)/3).ceil() : 0;
+      return ((dy + dx)/3).ceil() + sStart;
+    } else {
       int sStart = !state.kingIsDefeat
-        ? sqrt(dxStart * dxStart + dyStart * dyStart).toInt()
-        : 0;
+          ? (sqrt(dxStart * dxStart + dyStart * dyStart)/2).ceil()
+          : 0;
 
-    return state.usedCells.length;
+      return (sqrt(dx * dx + dy * dy)/2).ceil() + sStart;
     }
   }
 
-  
   bool _containsInOAndC(
       MyState state, PriorityQueue<MyState> O, List<MyState> C) {
     return _containsInC(state, C) != null || _containsInO(state, O) != null;
@@ -377,7 +376,7 @@ class SearchMethods {
 
   Result aStar(MyState state, int evristic) {
     Report report = Report(0, 0, 0, 0);
-    //PriorityQueue<MyState> O = new PriorityQueue<MyState>((a,b)=> prio)
+
     final O = PriorityQueue<MyState>((a, b) => a.cost.compareTo(a.cost));
     Position startPosition = state.horsePostion;
 
@@ -414,20 +413,22 @@ class SearchMethods {
             horsePostion: Position(
                 x.horsePostion.x + _moveX[i], x.horsePostion.y + _moveY[i]),
           );
-          newState.cost = newState.depth + _h(newState, startPosition, evristic);
+          newState.cost =
+              newState.depth + _h(newState, startPosition, evristic);
           if (!_containsInOAndC(newState, O, C)) {
             O.add(newState);
           } else {
             var st = _containsInO(newState, O);
             if (st != null) {
-              if (st.cost > x.cost) {
+              if (st.cost > newState.cost) {
                 O.remove(st);
                 O.add(newState);
               }
+
             } else {
               var st1 = _containsInC(state, C);
               if (st1 != null) {
-                if (st1.cost > x.cost) {
+                if (st1.cost > newState.cost) {
                   C.remove(st1);
                   O.add(newState);
                 }

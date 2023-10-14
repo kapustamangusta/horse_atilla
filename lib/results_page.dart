@@ -30,6 +30,10 @@ class _ResultsPageState extends State<ResultsPage> {
             SizedBox(
               height: 16,
             ),
+            Text((widget.results[i].cost-widget.results[i].depth).toString()),
+            SizedBox(
+              height: 16,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
