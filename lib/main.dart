@@ -1,3 +1,4 @@
+import 'package:attila_horse/services/state_generator.dart';
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
@@ -12,15 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: HomePage(
-        state: MyState(
+    final state = MyState(
           burningCells: [
             Position(1, 7),
             Position(4, 7),
@@ -29,11 +22,21 @@ class MyApp extends StatelessWidget {
           usedCells: [
            
           ],
-          row: 8,
-          column: 8,
+          row: 11,
+          column: 11,
           kingPosition: Position(0, 0),
           horsePostion: Position(7, 7),
-        ),
+        );
+    StateGenerator(state).GenerateStates();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: HomePage(
+        state: state,
       ),
     );
   }

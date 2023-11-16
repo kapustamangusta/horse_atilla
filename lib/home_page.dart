@@ -6,6 +6,7 @@ import 'package:attila_horse/services/search_methods.dart';
 import 'package:flutter/material.dart';
 
 import 'models/report.dart';
+import 'services/state_generator.dart';
 
 class HomePage extends StatefulWidget {
   final MyState state;
@@ -21,6 +22,12 @@ class _HomePageState extends State<HomePage> {
   Report report = Report(0, 0, 0, 0);
 
   String search = '';
+
+  @override
+  void initState() {
+    
+    
+  }
 
   void _showDialog(Result result) {
     if (result.result.length == 0) {

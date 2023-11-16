@@ -14,6 +14,7 @@ class Result {
 }
 
 class SearchMethods {
+  // напиши метод сортировки пузырьком
   List<int> _moveX = [2, -1, -2, -2, 1, 2, 1, -1];
   List<int> _moveY = [1, 2, 1, -1, -2, -1, 2, -2];
 
@@ -226,9 +227,9 @@ class SearchMethods {
       MyState backwardX = backwardO.removeAt(0);
       // прямой поиск
 
-      report.countIteration % 100 == 0
-          ? print('b ${report.countIteration}')
-          : null;
+      // report.countIteration % 100 == 0
+      //     ? print('b ${report.countIteration}')
+      //     : null;
 
       // находим состояние их обратного поиска, являющиемся продолжением состояния прямого поиска
       final suitableStateForForwardX = backwardC
@@ -272,9 +273,9 @@ class SearchMethods {
       }
 
       //обратный поиск
-      report.countIteration % 100 == 0
-          ? print('b ${report.countIteration}')
-          : null;
+      // report.countIteration % 100 == 0
+      //     ? print('b ${report.countIteration}')
+      //     : null;
       // находим состояние их прямого поиска, являющиемся продолжением состояния обратного поиска
       final suitableStateForBackwardX = forwardC
           .where((element) => (element.kingIsDefeat == backwardX.kingIsDefeat &&
@@ -373,6 +374,7 @@ class SearchMethods {
           }
         }
       }
+    //print('\n${table.toString().replaceAll(RegExp(r'],'), '\n')}');
       int sStart = !state.kingIsDefeat ? table[dxStart][dyStart] : 0;
       // for(int i=0;i<table.length;i++){
       //   for(int j=0;j<table[i].length;j++){
@@ -414,7 +416,7 @@ class SearchMethods {
   Result aStar(MyState state, int evristic) {
     Report report = Report(0, 0, 0, 0);
 
-    final O = PriorityQueue<MyState>((a, b) => a.cost.compareTo(a.cost));
+    final O = PriorityQueue<MyState>((a, b) => a.cost.compareTo(b.cost));
     Position startPosition = state.horsePostion;
 
     state.cost = state.depth + _h(state, startPosition, evristic);
@@ -447,6 +449,7 @@ class SearchMethods {
             kingPosition: x.kingPosition,
             kingIsDefeat: x.kingIsDefeat,
             depth: x.depth + 1,
+            
             horsePostion: Position(
                 x.horsePostion.x + _moveX[i], x.horsePostion.y + _moveY[i]),
           );
