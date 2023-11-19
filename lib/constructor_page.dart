@@ -196,7 +196,7 @@ class _ConstructorPageState extends State<ConstructorPage> {
                       children: [
                         Text('Координаты горящих клеток'),
                         Container(
-                          width: 200,
+                          width: 300,
                           child: MultiSelectDropDown(
                             padding: EdgeInsets.all(16),
                             onOptionSelected: (List<ValueItem> selectedOptions) {

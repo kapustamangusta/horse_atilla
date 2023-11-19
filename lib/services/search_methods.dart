@@ -332,10 +332,10 @@ class SearchMethods {
     int dyStart = (startPosition.y - state.kingPosition.y).abs();
 
     if (evristic == 1) {
-      int s = dx >= dy ? dx : dy;
-      int sStart = dxStart >= dyStart ? dxStart : dyStart;
-      int c = !state.kingIsDefeat ? sStart : 0;
-      return (s / 2).ceil() + (c / 2).ceil();
+      int horseToKing = dx >= dy ? dx : dy;
+      int startToKing = dxStart >= dyStart ? dxStart : dyStart;
+      startToKing = !state.kingIsDefeat ? startToKing : 0;
+      return (horseToKing / 2).ceil() + (startToKing / 2).ceil();
     } else if (evristic == 2) {
       int sStart = !state.kingIsDefeat ? ((dxStart + dyStart) / 3).ceil() : 0;
       return ((dy + dx) / 3).ceil() + sStart;
@@ -374,7 +374,7 @@ class SearchMethods {
           }
         }
       }
-    //print('\n${table.toString().replaceAll(RegExp(r'],'), '\n')}');
+      print('\n${table.toString().replaceAll(RegExp(r'],'), '\n')}');
       int sStart = !state.kingIsDefeat ? table[dxStart][dyStart] : 0;
       // for(int i=0;i<table.length;i++){
       //   for(int j=0;j<table[i].length;j++){
@@ -449,7 +449,6 @@ class SearchMethods {
             kingPosition: x.kingPosition,
             kingIsDefeat: x.kingIsDefeat,
             depth: x.depth + 1,
-            
             horsePostion: Position(
                 x.horsePostion.x + _moveX[i], x.horsePostion.y + _moveY[i]),
           );
@@ -476,9 +475,11 @@ class SearchMethods {
           }
         }
 
-        report.setData(O.toList(), C);
+        
       }
+      report.setData(O.toList(), C);
     }
+
     return Result(result: [], report: report);
   }
 }

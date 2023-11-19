@@ -255,10 +255,10 @@ class _HomePageState extends State<HomePage> {
                       _showDialog(results!);
                       setState(() {
                         report = results!.report;
-                        search = "A* матрица";
+                        search = "A* Метрика Коня";
                       });
                     },
-                    child: Text("A* матрица"),
+                    child: Text("A* Метрика Коня"),
                   ),
                   SizedBox(
                     height: 16,
